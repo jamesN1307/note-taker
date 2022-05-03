@@ -1,78 +1,97 @@
+// requiring express module 
 const express = require('express');
-const path = require('path');
 const fs = require('fs');
-const { v4: uuidv4 } = require('uuid')
-const PORT = process.env.PORT || 3001;
-const takeNote = require('./Develop/db/db.json')
-const app = express();
+const path = require('path'); 
 
-let notes;
+// if port is any route or 3001
+const PORT = process.env.PORT || 3001; 
 
-//parsing data
+// instantiate the server
+const app = express(); 
+
+// parse incoming string or array data
+app.use(express.urlencoded ( { extended: true }));
+// parse incoming JSON data
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// middleware for public files
+app.use(express.static('public')); 
 
-//serves css/js/static assets
-app.use(express.static("public"))
+// request data
+const { notes } = require('./Develop/db/db.json');
 
+// function handling taking the data from req.body and adding it to our animals.json file
+function createNewNote (body, notesArray) {
+    const note = body; 
+    notesArray.push(note); 
 
-// get NOTE routes
+    // path to write file 
+    fs.writeFileSync(
+        path.join(__dirname, './Develop/db/db.json'),
+        JSON.stringify({ notes : notesArray }, null, 2)
+    );
+    // return finished code to post route for response
+    return note; 
+};
 
-app.get("/",(req,res)=>{
-    res.sendFile(path.join(__dirname,"./Develop/public/index.html"))
-})
-app.get("/notes",(req,res)=>{
-    res.sendFile(path.join(__dirname,"./Develop/public/notes.html"))
-})
-
-app.get("/db/db",(req,res)=>{
-    res.json(takeNote)
-})
-
-function reloadPage(){
-    fs.write.File("db/db.json",JSON.stringify(notes), err => {
-        if (err) throw err;
-        return true;
-    })
-}
-
-// get method  
-
-app.get("/api/notes",(req,res)=>{
-    const note = JSON.parse(fs.readFileSync("./Develop/db/db.json","utf-8"))
-    res.json(note)
-})
-// post method 
-app.post("/api/notes",(req,res)=>{
-    const newNote = JSON.parse(fs.readFileSync("./Develop/db/db.json","utf-8"))
-    const { title, text} = req.body
-    if (req.body){
-        const urNote = {
-            title,
-            text,
-            id: uuidv4(),
-        }
-    newNote.push(urNote);
-    const readableNote = JSON.stringify(newNote,null,4);
-    fs.writeFileSync("./Develop/db/db.json/", readableNote)
-    res.json(`Your new note ${urNote.id} is now in a json file`)
-    }else{
-        throw err;
+// validating data
+function validateNote (note) {
+    if (!note.title || typeof note.title !== 'string') {
+        return false; 
     }
-})
+    if (!note.text || typeof note.text !== "string") {
+        return false;
+    }
+    return true;   
+};
 
-app.delete("/api/notes",(req,res)=>{
-    const erase = JSON.parse(fs.readFileSync("./Develop/db/db.json"))
-    fs.writeFileSync("./db/db.json",JSON.stringify(erase.filter(filterNote => {
-        filterNote.id !== req.params.id
-    },null,4
-    )))
-})
+// route GET 
+app.get('/api/notes', (req, res) => {
+    res.json(notes); 
+});
 
+// route to server to accept data to be used or stored server-side
+app.post('/api/notes', (req, res) => {
+    // set id based on what the next index of the array will be 
+    req.body.id = notes.length.toString(); 
 
-app.get("*",(req,res)=>{
-    res.sendFile(path.join(__dirname,"./Develop/public/index.html"))
-})
+    // if any data in req.body is incorrect, send error
+    if (!validateNote(req.body)) {
+        res.status(400).send('The note is not properly formatted.'); 
+    
+    } else {
+        // add note to json file and animals array in this function 
+        const note = createNewNote(req.body, notes); 
+
+        res.json(note);
+    }
+});
+
+// delete notes
+app.delete('/api/notes/:id', (req, res) => {
+    const id = req.params.id;
+    let note;
+
+    notes.map((element, index) => {
+      if (element.id == id){
+        note = element
+        notes.splice(index, 1)
+        return res.json(note);
+      } 
+    
+    })
+});
+
+// route to index.html 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname,'./Develop/public/index.html'));
+}); 
+
+// route to notes.html 
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname,'./Develop/public/notes.html'));
+}); 
+
+// chain listen() method onto our servers
 app.listen(PORT, () => {
-    console.log(`App listening at http://localhost:${PORT}`)
-})
+    console.log(`API server now on port ${PORT}!`);
+});

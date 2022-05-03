@@ -1,11 +1,10 @@
 # 11 Express.js: Note Taker
+## Description
+This application was created to allow users to read and write notes. This application uses Express.js to connect the client-side server and back-end server and Node.js for it's file system. This application is deployed on Heroku.## Table of Contents
 
-   ![Badge for GitHub repo top language](https://img.shields.io/github/languages/top/jamesN1307/Building Team Profile Generator ?style=flat&logo=appveyor) ![Badge for GitHub last commit](https://img.shields.io/github/last-commit/jamesN1307/Building Team Profile Generator ?style=flat&logo=appveyor)
-      
-    Check out the badges hosted by [shields.io](https://shields.io/).
-    ## Description
-    Team Profile Generator is a HTML generator which helps team managers to create a list of team members with all essential information in a timely fashion
-## Table of Contents
+![Existing notes are listed in the left-hand column with empty fields on the right-hand side for the new note’s title and text.](./Assets/11-express-homework-demo-01.png)
+
+![Note titled “Balance accounts” reads, “Balance account books by end of day Monday,” with other notes listed on the left.](./Assets/11-express-homework-demo-02.png)
 - [Installation](#installation)
 - [Tests](#tests)
 - [Usage](#usage)
@@ -30,9 +29,12 @@
     
 ![License: Do What The F*ck You Want To Public License(wtfpl)](https://img.shields.io/badge/License-Do What The F*ck You Want To Public License(wtfpl)-blue.svg)
     
-    * Licensed under the Do What The F*ck You Want To Public License(wtfpl) License. Copyright © 2022
+* Licensed under the Do What The F*ck You Want To Public License(wtfpl) License. Copyright © 2022
     ---
-    ## Contacts
+  ## Contacts
     GitHub: [jamesN1307](https://github.com/jamesN1307/)
     Email: [tri1307@uw.edu](mailto:tri1307@uw.edu$)
+
+
+
 
